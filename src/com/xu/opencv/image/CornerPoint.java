@@ -41,7 +41,7 @@ public class CornerPoint {
     }
 
     public static void main(String[] args) {
-        shi_tomasi();
+        harris();
     }
 
     /**
