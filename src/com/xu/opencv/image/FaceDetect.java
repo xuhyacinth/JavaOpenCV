@@ -29,18 +29,21 @@ public class FaceDetect {
         if (os.toUpperCase().contains("WINDOWS")) {
             File lib;
             if (type.endsWith("64")) {
-                lib = new File("lib\\x64\\" + System.mapLibraryName("opencv_java455"));
+                lib = new File("lib\\OpenCV-455\\x64\\" + System.mapLibraryName("opencv_java455"));
             } else {
-                lib = new File("lib\\x86\\" + System.mapLibraryName("opencv_java455"));
+                lib = new File("lib\\OpenCV-455\\x86\\" + System.mapLibraryName("opencv_java455"));
             }
             System.load(lib.getAbsolutePath());
         }
     }
 
     public static void main(String[] args) {
-        face();
+        int index = 0;
+        for (int i=0;i<10;i++) {
+            System.out.println(index++);
+        }
+        ///face();
     }
-
 
     /**
      * OpenCV-4.0.0 人脸识别
@@ -50,7 +53,7 @@ public class FaceDetect {
      */
     public static void face() {
         // 1 读取OpenCV自带的人脸识别特征XML文件 OpenCV 图像识别库一般位于 opencv\sources\data 下面
-        CascadeClassifier facebook = new CascadeClassifier("D:\\Learn\\OpenCV\\OpenCV-4.5.5\\sources\\data\\haarcascades\\haarcascade_frontalface_alt.xml");
+        CascadeClassifier facebook = new CascadeClassifier("lib\\OpenCV-455\\data\\haarcascades\\haarcascade_frontalface_alt.xml");
         // 2 读取测试图片
         Mat image = Imgcodecs.imread("D:\\OneDrive\\桌面\\5.jpeg");
         HighGui.imshow("人脸识别 原图", image.clone());
