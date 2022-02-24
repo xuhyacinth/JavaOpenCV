@@ -26,9 +26,9 @@ public class Operator {
         if (os.toUpperCase().contains("WINDOWS")) {
             File lib;
             if (type.endsWith("64")) {
-                lib = new File("lib\\x64\\" + System.mapLibraryName("opencv_java455"));
+                lib = new File("lib\\OpenCV-455\\x64\\" + System.mapLibraryName("opencv_java455"));
             } else {
-                lib = new File("lib\\x86\\" + System.mapLibraryName("opencv_java455"));
+                lib = new File("lib\\OpenCV-455\\x86\\" + System.mapLibraryName("opencv_java455"));
             }
             System.load(lib.getAbsolutePath());
         }
