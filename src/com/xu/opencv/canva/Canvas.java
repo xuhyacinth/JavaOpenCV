@@ -118,19 +118,19 @@ public class Canvas {
         // 1
         List<Point> points1 = new ArrayList<>();
         points1.add(new Point(0, 100));
-        points1.add(new Point(50, 50));
-        points1.add(new Point(100, 100));
-        points1.add(new Point(150, 50));
-        points1.add(new Point(200, 100));
-        points1.add(new Point(100, 250));
+        points1.add(new Point(60, 50));
+        points1.add(new Point(120, 100));
+        points1.add(new Point(180, 50));
+        points1.add(new Point(240, 100));
+        points1.add(new Point(120, 250));
         Point[] array = points1.stream().toArray(Point[]::new);
         MatOfPoint point = new MatOfPoint(array);
         Imgproc.fillConvexPoly(src, point, new Scalar(0, 255, 0), Imgproc.LINE_AA);
         // 2
         List<Point> points2 = new ArrayList<>();
-        points2.add(new Point(100, 100));
-        points2.add(new Point(150, 50));
-        points2.add(new Point(200, 100));
+        points2.add(new Point(120, 100));
+        points2.add(new Point(180, 50));
+        points2.add(new Point(240, 100));
         Imgproc.fillConvexPoly(src, new MatOfPoint(points2.stream().toArray(Point[]::new)), new Scalar(0, 255, 0), Imgproc.LINE_AA);
 
         HighGui.imshow("图像填充", src);
