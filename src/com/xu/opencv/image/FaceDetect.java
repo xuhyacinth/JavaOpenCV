@@ -38,11 +38,7 @@ public class FaceDetect {
     }
 
     public static void main(String[] args) {
-        int index = 0;
-        for (int i=0;i<10;i++) {
-            System.out.println(index++);
-        }
-        ///face();
+        face();
     }
 
     /**
