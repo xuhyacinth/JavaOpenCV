@@ -55,7 +55,7 @@ public class Tracking {
         // 1 创建 VideoCapture 对象
         VideoCapture capture = new VideoCapture();
         // 2 使用 VideoCapture 对象读取本地视频
-        capture.open("C:\\Users\\Administrator\\Videos\\111.mp4");
+        capture.open("D:\\BaiduNetdiskDownload\\video_003.avi");
         // 3 获取视频处理时的键盘输入 我这里是为了在 视频处理时如果按 Esc 退出视频对象跟踪
         int index = 0;
         // 4 使用 Mat video 保存视频中的图像帧 针对每一帧 做处理
@@ -104,7 +104,7 @@ public class Tracking {
         // 1 创建 VideoCapture 对象
         VideoCapture capture = new VideoCapture();
         // 2 使用 VideoCapture 对象读取本地视频
-        capture.open("C:\\Users\\Administrator\\Videos\\111.mp4");
+        capture.open("D:\\BaiduNetdiskDownload\\video_003.avi");
         // 3 获取视频处理时的键盘输入 我这里是为了在 视频处理时如果按 Esc 退出视频对象跟踪
         int index = 0;
         // 4 使用 Mat video 保存视频中的图像帧 针对每一帧 做处理
