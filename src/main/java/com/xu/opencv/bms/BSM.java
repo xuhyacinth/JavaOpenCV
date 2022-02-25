@@ -46,18 +46,18 @@ public class BSM {
     }
 
     public static void main(String[] args) {
-        BSM_MOG2();
+        BSM_KNN();
     }
 
     /**
-     * 稠密光流-HF
+     * OpenCV-4.1.0 视频分析和对象跟踪 背景消除 稠密光流-HF
      *
      * @return: void
      * @date 2022年2月15日12点25分
      */
     public static void HF() {
         VideoCapture capture = new VideoCapture();
-        capture.open("D:\\BaiduNetdiskDownload\\video_003.avi");
+        capture.open("lib\\video\\video_001.avi");
         Mat prev = new Mat();
         capture.read(prev);
         Imgproc.cvtColor(prev, prev, Imgproc.COLOR_BGR2GRAY);
@@ -82,8 +82,9 @@ public class BSM {
         for (int i = 0, row = dst.rows(); i < row; i++) {
             for (int j = 0, col = dst.cols(); j < col; j++) {
                 if (flow.get(i, j)[0] > 1D || flow.get(i, j)[1] > 1D) {
-                    Imgproc.line(dst, new Point(j, i), new Point(j + flow.get(i, j)[0], i + flow.get(i, j)[1]), new Scalar(255, 0, 0), 1, 8);
-                    Imgproc.circle(dst, new Point(j, i), 1, new Scalar(0, 0, 255), 1, 8);
+                    //Imgproc.line(dst, new Point(j, i), new Point(j + flow.get(i, j)[0], i + flow.get(i, j)[1]), new Scalar(255, 0, 0), 1, 8);
+                    //Imgproc.circle(dst, new Point(j, i), 1, new Scalar(0, 0, 255), 1, 8);
+                    Imgproc.rectangle(dst, new Point(j, i), new Point(j + flow.get(i, j)[0], i + flow.get(i, j)[1]), new Scalar(255, 0, 0), 1, Imgproc.LINE_AA, 0);
                 }
             }
         }
@@ -100,7 +101,7 @@ public class BSM {
         // 1 创建 VideoCapture 对象
         VideoCapture capture = new VideoCapture(0);
         // 2 使用 VideoCapture 对象读取本地视频
-        capture.open("D:\\BaiduNetdiskDownload\\video_003.avi");
+        capture.open("lib\\video\\video_001.avi");
         // 3 获取视频处理时的键盘输入 我这里是为了在 视频处理时如果按 Esc 退出视频对象跟踪
         int index = 0;
         // 4 使用 Mat video 保存视频中的图像帧 针对每一帧 做处理
@@ -108,11 +109,11 @@ public class BSM {
         // 5 获取形态学结构
         Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(2, 2), new Point(-1, -1));
         // 6 GMM
-        BackgroundSubtractorMOG2 subtractor = Video.createBackgroundSubtractorMOG2();
+        BackgroundSubtractorMOG2 mog2 = Video.createBackgroundSubtractorMOG2();
         Mat mask = new Mat();
         while (capture.read(video)) {
             // 7  提取模型 BSM
-            subtractor.apply(video, mask);
+            mog2.apply(video, mask);
             // 8 形态学变换
             Imgproc.morphologyEx(mask, mask, Imgproc.MORPH_OPEN, kernel, new Point(-1, -1));
             // 9 效果展示
@@ -139,7 +140,7 @@ public class BSM {
         // 1 创建 VideoCapture 对象
         VideoCapture capture = new VideoCapture(0);
         // 2 使用 VideoCapture 对象读取本地视频
-        capture.open("D:\\BaiduNetdiskDownload\\video_003.avi");
+        capture.open("lib\\video\\video_001.avi");
         // 4 使用 Mat video 保存视频中的图像帧 针对每一帧 做处理
         Mat video = new Mat();
         // 5 设置形态学结构
@@ -194,6 +195,5 @@ public class BSM {
                 .stream().filter(Objects::nonNull)
                 .map(item -> Imgproc.boundingRect(item)).collect(Collectors.toList());
     }
-
 
 }
