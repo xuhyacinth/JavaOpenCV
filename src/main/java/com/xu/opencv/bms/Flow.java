@@ -29,14 +29,14 @@ public class Flow {
     }
 
     /**
-     * 稠密光流-HF
+     * OpenCV 视频分析和对象跟踪 背景消除 稠密光流(HF)
      *
      * @return: void
      * @date 2022年2月15日12点25分
      */
     public static void HF() {
         VideoCapture capture = new VideoCapture();
-        capture.open("D:\\BaiduNetdiskDownload\\video_003.avi");
+        capture.open("lib\\video\\video_001.avi");
         Mat prev = new Mat();
         capture.read(prev);
         Imgproc.cvtColor(prev, prev, Imgproc.COLOR_BGR2GRAY);
@@ -49,23 +49,30 @@ public class Flow {
                 Video.calcOpticalFlowFarneback(prev, next, flow, 0.5, 3, 5, 3, 5, 1.2, 0);
             }
             Imgproc.cvtColor(prev, dest, Imgproc.COLOR_GRAY2BGR);
-            drawOpticalFlowHF(flow, dest);
-            HighGui.imshow("稠密光流-HF", dest);
+            deal(flow, dest);
+            HighGui.imshow("稠密光流(HF) 背景消除", dest);
             HighGui.waitKey(100);
             prev = next.clone();
         }
         capture.release();
     }
 
-    public static Mat drawOpticalFlowHF(Mat flow, Mat dst) {
+    /**
+     * 染色
+     *
+     * @param flow
+     * @param dst
+     * @return
+     */
+    public static Mat deal(Mat flow, Mat dst) {
         for (int i = 0, row = dst.rows(); i < row; i++) {
             for (int j = 0, col = dst.cols(); j < col; j++) {
                 if (flow.get(i, j)[0] > 1D || flow.get(i, j)[1] > 1D) {
-                    Imgproc.line(dst, new Point(j, i), new Point(j + flow.get(i, j)[0], i + flow.get(i, j)[1]), new Scalar(255, 0, 0), 1, 8);
-                    Imgproc.circle(dst, new Point(j, i), 1, new Scalar(0, 0, 255), 1, 8);
+                    Imgproc.circle(dst, new Point(j, i), 1, new Scalar(0, 0, 255), 2, Imgproc.LINE_AA);
                 }
             }
         }
         return dst;
     }
+
 }

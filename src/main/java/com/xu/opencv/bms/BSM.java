@@ -46,53 +46,11 @@ public class BSM {
     }
 
     public static void main(String[] args) {
-        BSM_KNN();
+        BSM_MOG2();
     }
 
     /**
-     * OpenCV-4.1.0 视频分析和对象跟踪 背景消除 稠密光流-HF
-     *
-     * @return: void
-     * @date 2022年2月15日12点25分
-     */
-    public static void HF() {
-        VideoCapture capture = new VideoCapture();
-        capture.open("lib\\video\\video_001.avi");
-        Mat prev = new Mat();
-        capture.read(prev);
-        Imgproc.cvtColor(prev, prev, Imgproc.COLOR_BGR2GRAY);
-        Mat next = new Mat();
-        Mat flow = new Mat();
-        Mat dest = new Mat();
-        while (capture.read(next)) {
-            Imgproc.cvtColor(next, next, Imgproc.COLOR_BGR2GRAY);
-            if (!prev.empty()) {
-                Video.calcOpticalFlowFarneback(prev, next, flow, 0.5, 3, 5, 3, 5, 1.2, 0);
-            }
-            Imgproc.cvtColor(prev, dest, Imgproc.COLOR_GRAY2BGR);
-            drawOpticalFlowHF(flow, dest);
-            HighGui.imshow("稠密光流-HF", dest);
-            HighGui.waitKey(100);
-            prev = next.clone();
-        }
-        capture.release();
-    }
-
-    public static Mat drawOpticalFlowHF(Mat flow, Mat dst) {
-        for (int i = 0, row = dst.rows(); i < row; i++) {
-            for (int j = 0, col = dst.cols(); j < col; j++) {
-                if (flow.get(i, j)[0] > 1D || flow.get(i, j)[1] > 1D) {
-                    //Imgproc.line(dst, new Point(j, i), new Point(j + flow.get(i, j)[0], i + flow.get(i, j)[1]), new Scalar(255, 0, 0), 1, 8);
-                    //Imgproc.circle(dst, new Point(j, i), 1, new Scalar(0, 0, 255), 1, 8);
-                    Imgproc.rectangle(dst, new Point(j, i), new Point(j + flow.get(i, j)[0], i + flow.get(i, j)[1]), new Scalar(255, 0, 0), 1, Imgproc.LINE_AA, 0);
-                }
-            }
-        }
-        return dst;
-    }
-
-    /**
-     * OpenCV-4.1.0 视频分析和对象跟踪 背景消除 GMM
+     * OpenCV 视频分析和对象跟踪 背景消除 GMM
      *
      * @return: void
      * @date: 2019年7月19日 下午22:10:14
@@ -117,11 +75,11 @@ public class BSM {
             // 8 形态学变换
             Imgproc.morphologyEx(mask, mask, Imgproc.MORPH_OPEN, kernel, new Point(-1, -1));
             // 9 效果展示
-            Optional.ofNullable(process(mask)).orElse(new ArrayList<>())
+            Optional.ofNullable(deal(mask)).orElse(new ArrayList<>())
                     .stream().filter(Objects::nonNull).filter(rect -> rect.width > 10).forEach(rect -> {
-                        Imgproc.rectangle(video, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(255, 0, 0), 1, Imgproc.LINE_AA, 0);
+                        Imgproc.rectangle(mask, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(255, 0, 0), 1, Imgproc.LINE_AA, 0);
                     });
-            HighGui.imshow("GMM 背景消除", video);
+            HighGui.imshow("GMM 背景消除", mask);
             index = HighGui.waitKey(100);
             if (index == 27) {
                 capture.release();
@@ -131,7 +89,7 @@ public class BSM {
     }
 
     /**
-     * OpenCV-4.1.0 视频分析和对象跟踪 背景消除 KNN
+     * OpenCV 视频分析和对象跟踪 背景消除 KNN
      *
      * @return: void
      * @date: 2019年7月19日 下午22:10:14
@@ -154,11 +112,11 @@ public class BSM {
             // 8 形态学变换
             Imgproc.morphologyEx(bitmask, bitmask, Imgproc.MORPH_OPEN, kernel, new Point(-1, -1));
             // 9 效果展示
-            Optional.ofNullable(process(bitmask)).orElse(new ArrayList<>())
+            Optional.ofNullable(deal(bitmask)).orElse(new ArrayList<>())
                     .stream().filter(Objects::nonNull).filter(rect -> rect.width > 10).forEach(rect -> {
-                        Imgproc.rectangle(video, new Point(rect.x - 3, rect.y - 3), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 0, 255), 1, Imgproc.LINE_AA, 0);
+                        Imgproc.rectangle(bitmask, new Point(rect.x - 3, rect.y - 3), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 0, 255), 1, Imgproc.LINE_AA, 0);
                     });
-            HighGui.imshow("KNN 背景消除", video);
+            HighGui.imshow("KNN 背景消除", bitmask);
             int index = HighGui.waitKey(100);
             if (index == 27) {
                 capture.release();
@@ -186,7 +144,7 @@ public class BSM {
      * @return: List<Rect>
      * @date 2019年7月19日 下午22:10:14
      */
-    public static List<Rect> process(Mat video) {
+    public static List<Rect> deal(Mat video) {
         // 1 跟踪物体在图像中的位置
         List<MatOfPoint> contours = new ArrayList<>();
         // 2 找出图像中物体的位置
