@@ -216,32 +216,31 @@ public class Tracking {
      * <tr><td align="left">CHAIN_APPROX_TC89_L1</td><td align="left">使用teh-Chinl chain 近</td></tr>
      * <tr><td align="left">CHAIN_APPROX_TC89_KCOS </td><td align="left">使用teh-Chinl chain 近</td></tr>
      *
-     * @param dealvideo Mat
-     * @param rects     Rect
+     * @param vide Mat
+     * @param rect Rect
      * @return: Rect
      * @date 2019年7月19日 下午22:10:14
      */
-    public static Rect process(Mat dealvideo, Rect rects) {
+    public static Rect process(Mat vide, Rect rect) {
         // 1 跟踪物体在图像中的位置
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
         // 2
         Mat hierarchy = new Mat();
         // 3 找出图像中物体的位置
-        //Imgproc.findContours(dealvideo, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE,new Point(0, 0));
-        Imgproc.findContours(dealvideo, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE, new Point(0, 0));
-        if (contours.size() > 0) {// 4.1 如果发现图像
+        Imgproc.findContours(vide, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE, new Point(0, 0));
+        if (contours.size() > 0) { // 4.1 如果发现图像
             double maxarea = 0.0;
             for (int t = 0; t < contours.size(); t++) {
                 double area = Imgproc.contourArea(contours.get(t));
                 if (area > maxarea) {
                     maxarea = area;
-                    rects = Imgproc.boundingRect(contours.get(t));
+                    rect = Imgproc.boundingRect(contours.get(t));
                 }
             }
-        } else {// 4.2 如果没有发现图像
-            rects.x = rects.y = rects.width = rects.height = 0;
+        } else { // 4.2 如果没有发现图像
+            rect.x = rect.y = rect.width = rect.height = 0;
         }
-        return rects;
+        return rect;
     }
 
     /**
