@@ -46,7 +46,7 @@ public class BSM {
     }
 
     public static void main(String[] args) {
-        HF();
+        BSM_KNN();
     }
 
     /**
@@ -183,10 +183,10 @@ public class BSM {
             Imgproc.morphologyEx(bitmask, bitmask, Imgproc.MORPH_OPEN, kernel, new Point(-1, -1));
             // 9 效果展示
             Optional.ofNullable(process(bitmask)).orElse(new ArrayList<>())
-                    .stream().filter(Objects::nonNull).forEach(rect -> {
-                        Imgproc.rectangle(bitmask, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(255, 0, 0), 1, Imgproc.LINE_AA, 0);
+                    .stream().filter(Objects::nonNull).filter(rect -> rect.width > 10).forEach(rect -> {
+                        Imgproc.rectangle(video, new Point(rect.x - 3, rect.y - 3), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 0, 255), 1, Imgproc.LINE_AA, 0);
                     });
-            HighGui.imshow("KNN 背景消除", bitmask);
+            HighGui.imshow("KNN 背景消除", video);
             int index = HighGui.waitKey(100);
             if (index == 27) {
                 capture.release();
