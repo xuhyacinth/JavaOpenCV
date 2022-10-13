@@ -8,11 +8,15 @@ import java.util.Optional;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
+import org.opencv.core.TermCriteria;
 import org.opencv.highgui.HighGui;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.video.Video;
@@ -44,7 +48,63 @@ public class Tracking {
     }
 
     public static void main(String[] args) {
-        objectsTrackingBaseOnHF();
+        objectsTrackingBaseOnHF1();
+    }
+
+    /**
+     * OpenCV-4.1.0 视频分析和对象跟踪 背景消除 稠密光流-HF
+     *
+     * @return: void
+     * @date 2022年2月15日12点25分
+     */
+    public static void objectsTrackingBaseOnHF1() {
+        VideoCapture capture = new VideoCapture();
+        capture.open("C:\\Users\\Administrator\\Desktop\\1.mp4");
+        Mat prev = new Mat();
+        capture.read(prev);
+
+        Mat find = prev.clone();
+        Mat color = new Mat();
+        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3), new Point(-1, -1));
+        Core.inRange(find, new Scalar(255, 0, 0), new Scalar(150, 100, 100), color);
+        Imgproc.morphologyEx(color, color, Imgproc.MORPH_OPEN, kernel, new Point(-1, -1), 1);
+        //Imgproc.dilate(find, find, kernel, new Point(-1, -1), 4);
+
+        HighGui.imshow("基于稠密光流(HF)的对象跟踪 多对象跟踪", color.clone());
+        HighGui.waitKey(100);
+
+        List<MatOfPoint> contours = new ArrayList<>();
+        Mat hierarchy = new Mat();
+        Imgproc.findContours(prev, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE, new Point(0, 0));
+        System.out.println(contours.size());
+
+
+        Imgproc.cvtColor(prev, prev, Imgproc.COLOR_BGR2GRAY);
+        Mat next = new Mat();
+        Mat flow = new Mat();
+        Mat dest = new Mat();
+        Mat deal = new Mat();
+        while (capture.read(next)) {
+            Imgproc.cvtColor(next, next, Imgproc.COLOR_BGR2GRAY);
+            MatOfPoint2f nextPts = new MatOfPoint2f();
+            if (!prev.empty()) {
+
+                TermCriteria criteria = new TermCriteria();
+                criteria.epsilon = .03;
+                criteria.maxCount = 20;
+
+                MatOfPoint2f prevPts = new MatOfPoint2f(new Point(170, 500), new Point(230, 550));
+                Video.calcOpticalFlowPyrLK(prev, next, prevPts, nextPts, new MatOfByte(), new MatOfFloat(), new Size(21, 21), 2, criteria
+                        , 0, 0.001);
+            }
+            // 色彩还原
+            Imgproc.cvtColor(prev, dest, Imgproc.COLOR_GRAY2BGR);
+            Imgproc.rectangle(prev, nextPts.toArray()[0], nextPts.toArray()[1], new Scalar(0, 0, 255), 1, Imgproc.LINE_AA);
+            HighGui.imshow("基于稠密光流(HF)的对象跟踪 多对象跟踪", prev.clone());
+            HighGui.waitKey(100);
+            prev = next.clone();
+        }
+        capture.release();
     }
 
     /**
@@ -78,7 +138,8 @@ public class Tracking {
             // 显示轮廓
             Optional.ofNullable(process(deal)).orElse(new ArrayList<>())
                     .stream().filter(Objects::nonNull).filter(rect -> rect.width > 10).forEach(rect -> {
-                        Imgproc.rectangle(show, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 0, 255), 1, Imgproc.LINE_AA, 0);
+                        Imgproc.rectangle(show, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
+                                new Scalar(0, 0, 255), 1, Imgproc.LINE_AA, 0);
                     });
             HighGui.imshow("基于稠密光流(HF)的对象跟踪 多对象跟踪", show.clone());
             HighGui.waitKey(100);
@@ -98,7 +159,8 @@ public class Tracking {
         for (int i = 0, row = dst.rows(); i < row; i++) {
             for (int j = 0, col = dst.cols(); j < col; j++) {
                 if (flow.get(i, j)[0] > 1D || flow.get(i, j)[1] > 1D) {
-                    Imgproc.rectangle(dst, new Point(j, i), new Point(j + flow.get(i, j)[0], i + flow.get(i, j)[1]), new Scalar(0, 0, 255), 1, Imgproc.LINE_AA, 0);
+                    Imgproc.rectangle(dst, new Point(j, i), new Point(j + flow.get(i, j)[0], i + flow.get(i, j)[1]), new Scalar(0, 0,
+                            255), 1, Imgproc.LINE_AA, 0);
                 }
             }
         }
@@ -137,11 +199,13 @@ public class Tracking {
             // 11 找出对应物体在图像中的坐标位置(X,Y)及宽、高(width,height)轮廓发现与位置标定
             List<Rect> rects = process(dealvideo);
             // 12.1 在物体轮廓外画矩形
-            //Imgproc.rectangle(video,new Point(rects.x,rects.y), new Point(rects.x+rects.width,rects.y+rects.height),new Scalar(0, 0, 255), 3, 8, 0);// 在物体轮廓外画矩形
+            //Imgproc.rectangle(video,new Point(rects.x,rects.y), new Point(rects.x+rects.width,rects.y+rects.height),new Scalar(0, 0,
+            // 255), 3, 8, 0);// 在物体轮廓外画矩形
             // 12.2 在物体轮廓外画矩形
             System.out.println("发现 " + rects.size() + " 对象");
             for (int i = 0; i < rects.size(); i++) {
-                Imgproc.rectangle(video, new Point(rects.get(i).x, rects.get(i).y), new Point(rects.get(i).x + rects.get(i).width, rects.get(i).y + rects.get(i).height), new Scalar(255, 0, 0), 1, Imgproc.LINE_AA, 0);
+                Imgproc.rectangle(video, new Point(rects.get(i).x, rects.get(i).y), new Point(rects.get(i).x + rects.get(i).width,
+                        rects.get(i).y + rects.get(i).height), new Scalar(255, 0, 0), 1, Imgproc.LINE_AA, 0);
             }
             //Imgproc.rectangle(dealvideo,rects,new Scalar(0, 0, 255), 3, 8, 0);
             //13 展示最终的效果
@@ -187,7 +251,8 @@ public class Tracking {
             Rect rects = new Rect();
             rects = process(dealvideo, rects);
             // 12.1 在物体轮廓外画矩形
-            //Imgproc.rectangle(video,new Point(rects.x,rects.y), new Point(rects.x+rects.width,rects.y+rects.height),new Scalar(0, 0, 255), 3, 8, 0);// 在物体轮廓外画矩形
+            //Imgproc.rectangle(video,new Point(rects.x,rects.y), new Point(rects.x+rects.width,rects.y+rects.height),new Scalar(0, 0,
+            // 255), 3, 8, 0);// 在物体轮廓外画矩形
             // 12.2 在物体轮廓外画矩形
             Imgproc.rectangle(video, rects, new Scalar(0, 0, 255), 3, 8, 0);
             //Imgproc.rectangle(dealvideo,rects,new Scalar(0, 0, 255), 3, 8, 0);
@@ -207,7 +272,8 @@ public class Tracking {
      * <tr><td colspan="2" align="center">Imgproc.findContours() 函数 mode 和 method 参数解释</td></tr>
      * <tr><th align="center">Mode 输入参数</th><th align="center">参数解释</th></tr>
      * <tr><td align="left">RETR_EXTERNAL</td><td align="left">只检测最外围轮廓，包含在外围轮廓内的内围轮廓被忽略</td></tr>
-     * <tr><td align="left">RETR_LIST</td><td align="left">检测所有的轮廓，包括内围、外围轮廓，但是检测到的轮廓不建立等级关系，彼此之间独立，没有等级关系，这就意味着这个检索模式下不存在父轮廓或内嵌轮廓，所以hierarchy向量内所有元素的第3、第4个分量都会被置为-1</td></tr>
+     * <tr><td align="left">RETR_LIST</td><td
+     * align="left">检测所有的轮廓，包括内围、外围轮廓，但是检测到的轮廓不建立等级关系，彼此之间独立，没有等级关系，这就意味着这个检索模式下不存在父轮廓或内嵌轮廓，所以hierarchy向量内所有元素的第3、第4个分量都会被置为-1</td></tr>
      * <tr><td align="left">RETR_CCOMP</td><td align="left"> 检测所有的轮廓，但所有轮廓只建立两个等级关系，外围为顶层，若外围内的内围轮廓还包含了其他的轮廓信息，则内围内的所有轮廓均归属于顶层</td></tr>
      * <tr><td align="left">RETR_TREE</td><td align="left">检测所有轮廓，所有轮廓建立一个等级树结构。外层轮廓包含内层轮廓，内层轮廓还可以继续包含内嵌轮廓。</td></tr>
      * <tr><th align="center">Mthod 输入参数</th><th align="center">参数解释</th></tr>
@@ -228,7 +294,8 @@ public class Tracking {
         Mat hierarchy = new Mat();
         // 3 找出图像中物体的位置
         Imgproc.findContours(vide, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE, new Point(0, 0));
-        if (contours.size() > 0) { // 4.1 如果发现图像
+        if (contours.size() > 0) {
+            // 4.1 如果发现图像
             double maxarea = 0.0;
             for (int t = 0; t < contours.size(); t++) {
                 double area = Imgproc.contourArea(contours.get(t));
@@ -237,7 +304,8 @@ public class Tracking {
                     rect = Imgproc.boundingRect(contours.get(t));
                 }
             }
-        } else { // 4.2 如果没有发现图像
+        } else {
+            // 4.2 如果没有发现图像
             rect.x = rect.y = rect.width = rect.height = 0;
         }
         return rect;
@@ -249,7 +317,8 @@ public class Tracking {
      * <tr><td colspan="2" align="center">Imgproc.findContours() 函数 mode 和 method 参数解释</td></tr>
      * <tr><th align="center">Mode 输入参数</th><th align="center">参数解释</th></tr>
      * <tr><td align="left">RETR_EXTERNAL</td><td align="left">只检测最外围轮廓，包含在外围轮廓内的内围轮廓被忽略</td></tr>
-     * <tr><td align="left">RETR_LIST</td><td align="left">检测所有的轮廓，包括内围、外围轮廓，但是检测到的轮廓不建立等级关系，彼此之间独立，没有等级关系，这就意味着这个检索模式下不存在父轮廓或内嵌轮廓，所以hierarchy向量内所有元素的第3、第4个分量都会被置为-1</td></tr>
+     * <tr><td align="left">RETR_LIST</td><td
+     * align="left">检测所有的轮廓，包括内围、外围轮廓，但是检测到的轮廓不建立等级关系，彼此之间独立，没有等级关系，这就意味着这个检索模式下不存在父轮廓或内嵌轮廓，所以hierarchy向量内所有元素的第3、第4个分量都会被置为-1</td></tr>
      * <tr><td align="left">RETR_CCOMP</td><td align="left"> 检测所有的轮廓，但所有轮廓只建立两个等级关系，外围为顶层，若外围内的内围轮廓还包含了其他的轮廓信息，则内围内的所有轮廓均归属于顶层</td></tr>
      * <tr><td align="left">RETR_TREE</td><td align="left">检测所有轮廓，所有轮廓建立一个等级树结构。外层轮廓包含内层轮廓，内层轮廓还可以继续包含内嵌轮廓。</td></tr>
      * <tr><th align="center">Mthod 输入参数</th><th align="center">参数解释</th></tr>
