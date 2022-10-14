@@ -4,10 +4,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
-import org.opencv.core.Size;
 import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -128,11 +128,42 @@ public class ImageChange {
      */
     public static void move() {
         Mat src = Imgcodecs.imread("C:\\Users\\Administrator\\Desktop\\1.png");
+        // 自定义 旋转 矩阵
+        Mat dst = new Mat(2, 3, CvType.CV_32F);
+        dst.put(0, 0, 1);
+        dst.put(0, 1, 0);
+        dst.put(0, 2, src.width() / 4);
+        dst.put(1, 0, 0);
+        dst.put(1, 1, 1);
+        dst.put(1, 2, src.height() / 4);
         // 进行 图像平移
         Mat image = new Mat();
-        Imgproc.warpAffine(src, image, new Mat(), new Size(src.width() - 100, src.height()));
+        Imgproc.warpAffine(src, image, dst, src.size());
         HighGui.imshow("原图", src);
         HighGui.imshow("图像平移", image);
+        HighGui.waitKey(0);
+    }
+
+    /**
+     * OpenCV 图像缩放
+     *
+     * @return void
+     * @Author: hyacinth
+     * @Title: rotate
+     * @Description: TODO
+     * @date: 2022年2月22日12点32分
+     */
+    public static void resize() {
+        Mat src = Imgcodecs.imread("C:\\Users\\Administrator\\Desktop\\1.png");
+        // 图像中心
+        Point center = new Point(src.cols() / 2, src.rows() / 2);
+        // 获取 旋转 矩阵
+        Mat dst = Imgproc.getRotationMatrix2D(center, 0, 0.5);
+        // 进行 图像缩放
+        Mat image = new Mat();
+        Imgproc.warpAffine(src, image, dst, src.size());
+        HighGui.imshow("原图", src);
+        HighGui.imshow("图像缩放", image);
         HighGui.waitKey(0);
     }
 
