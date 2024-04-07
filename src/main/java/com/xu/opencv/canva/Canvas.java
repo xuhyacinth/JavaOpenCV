@@ -30,9 +30,9 @@ public class Canvas {
         if (os.toUpperCase().contains("WINDOWS")) {
             File lib;
             if (type.endsWith("64")) {
-                lib = new File("lib\\OpenCV-455\\x64\\" + System.mapLibraryName("opencv_java455"));
+                lib = new File("lib\\opencv\\x64\\" + System.mapLibraryName("opencv_java490"));
             } else {
-                lib = new File("lib\\OpenCV-455\\x86\\" + System.mapLibraryName("opencv_java455"));
+                lib = new File("lib\\opencv\\x86\\" + System.mapLibraryName("opencv_java490"));
             }
             System.load(lib.getAbsolutePath());
         }
