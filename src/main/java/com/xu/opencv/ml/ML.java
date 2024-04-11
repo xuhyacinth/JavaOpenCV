@@ -43,6 +43,11 @@ public class ML {
         predict();
     }
 
+    public static void ann() {
+        ANN_MLP ann = ANN_MLP.create();
+    }
+
+
     public static void predict() throws Exception {
         ANN_MLP ann = ANN_MLP.load("D:\\OneDrive\\桌面\\ann.xml");
         BufferedReader reader = new BufferedReader(new FileReader("D:\\OneDrive\\桌面\\predict.txt"));
