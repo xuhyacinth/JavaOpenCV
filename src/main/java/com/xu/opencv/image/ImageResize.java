@@ -37,10 +37,12 @@ public class ImageResize {
     public static void resize1(String path) {
         Mat src = Imgcodecs.imread(path);
         Mat dst = new Mat();
-        // 目标尺寸
+
+        // 定义目标图像的尺寸
         Size size = new Size(300, 300);
-        // 使用双线性插值
-        Imgproc.resize(src, dst, size, 0, 0, Imgproc.INTER_AREA);
+        // 使用双线性插值进行缩放
+        Imgproc.resize(src, dst, size, 0, 0, Imgproc.INTER_LINEAR);
+
 
         HighGui.imshow("src", src);
         HighGui.imshow("dst", dst);
@@ -51,13 +53,19 @@ public class ImageResize {
         Mat src = Imgcodecs.imread(path);
         Mat dst = new Mat();
 
+        // 定义原图像中的三个点
         Point[] srcPoints = {new Point(0, 0), new Point(src.cols() - 1, 0), new Point(0, src.rows() - 1)};
+        // 定义目标图像中的三个点
         Point[] dstPoints = {new Point(0, src.rows() * 0.33), new Point(src.cols() * 0.85, src.rows() * 0.25), new Point(src.cols() * 0.15, src.rows() * 0.7)};
 
+        // 将源点数组转换为 MatOfPoint2f
         MatOfPoint2f srcMat = new MatOfPoint2f(srcPoints);
+        // 将目标点数组转换为 MatOfPoint2f
         MatOfPoint2f dstMat = new MatOfPoint2f(dstPoints);
 
+        // 计算仿射变换矩阵
         Mat affineMatrix = Imgproc.getAffineTransform(srcMat, dstMat);
+        // 应用仿射变换
         Imgproc.warpAffine(src, dst, affineMatrix, new Size(src.cols(), src.rows()));
 
         HighGui.imshow("src", src);
@@ -69,19 +77,24 @@ public class ImageResize {
         Mat src = Imgcodecs.imread(path);
         Mat dst = new Mat();
 
+        // 定义原图像中的四个点
         Point[] srcPoints = {new Point(0, 0), new Point(src.cols() - 1, 0), new Point(src.cols() - 1, src.rows() - 1), new Point(0, src.rows() - 1)};
+        // 定义目标图像中的四个点
         Point[] dstPoints = {new Point(src.cols() * 0.05, src.rows() * 0.33), new Point(src.cols() * 0.9, src.rows() * 0.25), new Point(src.cols() * 0.8, src.rows() * 0.9), new Point(src.cols() * 0.2, src.rows() * 0.7)};
 
+        // 将源点数组转换为 MatOfPoint2f
         MatOfPoint2f srcMat = new MatOfPoint2f(srcPoints);
+        // 将目标点数组转换为 MatOfPoint2f
         MatOfPoint2f dstMat = new MatOfPoint2f(dstPoints);
 
+        // 计算透视变换矩阵
         Mat perspectiveMatrix = Imgproc.getPerspectiveTransform(srcMat, dstMat);
+        // 应用透视变换
         Imgproc.warpPerspective(src, dst, perspectiveMatrix, new Size(src.cols(), src.rows()));
 
         HighGui.imshow("src", src);
         HighGui.imshow("dst", dst);
         HighGui.waitKey();
-
     }
 
 }
