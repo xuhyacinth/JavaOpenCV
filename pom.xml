@@ -13,4 +13,30 @@
         <maven.compiler.target>21</maven.compiler.target>
     </properties>
 
+    <dependencies>
+
+        <dependency>
+            <groupId>org.opencv</groupId>
+            <artifactId>opencv</artifactId>
+            <version>4100</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/opencv/opencv-490.jar</systemPath>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.bytedeco/opencv -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>opencv</artifactId>
+            <version>4.9.0-1.5.10</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.bytedeco/opencv-platform -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>opencv-platform</artifactId>
+            <version>4.9.0-1.5.10</version>
+        </dependency>
+
+    </dependencies>
+
 </project>

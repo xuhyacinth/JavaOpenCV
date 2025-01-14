@@ -1,6 +1,7 @@
 package com.xu.opencv.image;
 
 import java.io.File;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class ImageChange {
     }
 
     public static void main(String[] args) {
-        move();
+        warpPerspective();
     }
 
     /**
@@ -69,7 +70,7 @@ public class ImageChange {
      * @date: 2022年2月22日12点32分
      */
     public static void warpPerspective() {
-        Mat src = Imgcodecs.imread("C:\\Users\\Administrator\\Desktop\\1.png");
+        Mat src = Imgcodecs.imread("C:\\Users\\xuyq\\Desktop\\1.png");
         MatOfPoint2f point1 = new MatOfPoint2f();
         List<Point> before = new ArrayList<>();
         before.add(new Point(0, 0));
@@ -79,10 +80,10 @@ public class ImageChange {
         point1.fromList(before);
         MatOfPoint2f point2 = new MatOfPoint2f();
         List<Point> after = new ArrayList<>();
-        after.add(new Point(src.cols(), src.rows()));
-        after.add(new Point(src.cols() * 0.1, src.rows() * 0.8));
-        after.add(new Point(src.cols() * 0.7, src.rows() * 0.3));
-        after.add(new Point(0, 0));
+        after.add(new Point(20, 20));
+        after.add(new Point(src.cols() * 0.9, src.rows() * 0.1));
+        after.add(new Point(src.cols() * 0.1, src.rows() * 0.9));
+        after.add(new Point(src.cols() * 0.8, src.rows() * 0.8));
         point2.fromList(after);
         // 获取 透视变换 矩阵
         Mat dst = Imgproc.getPerspectiveTransform(point1, point2);
@@ -91,6 +92,8 @@ public class ImageChange {
         Imgproc.warpPerspective(src, image, dst, src.size());
         HighGui.imshow("原图", src);
         HighGui.imshow("透视变换", image);
+
+        //Imgcodecs.imwrite("C:\\Users\\xuyq\\Desktop\\11.png", image);
         HighGui.waitKey(0);
     }
 
