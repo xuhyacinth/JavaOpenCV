@@ -3,6 +3,7 @@ package com.xu.opencv.image;
 import java.io.File;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.opencv.core.CvType;
@@ -33,7 +34,7 @@ public class ImageChange {
     }
 
     public static void main(String[] args) {
-        warpPerspective();
+        warpAffine();
     }
 
     /**
@@ -46,9 +47,13 @@ public class ImageChange {
      * @date: 2022年2月22日12点32分
      */
     public static void warpAffine() {
-        Mat src = Imgcodecs.imread("C:\\Users\\Administrator\\Desktop\\1.png");
-        MatOfPoint2f point1 = new MatOfPoint2f(new Point(0, 0), new Point(0, src.rows()), new Point(src.cols(), 0));
-        MatOfPoint2f point2 = new MatOfPoint2f(new Point(src.cols() * 0.1, src.cols() * 0.1), new Point(src.cols() * 0.2, src.cols() * 0.7),
+        Mat src = Imgcodecs.imread("C:\\Users\\xuyq\\Desktop\\1.png");
+        MatOfPoint2f point1 = new MatOfPoint2f(new Point(0, 0),
+                new Point(0, src.rows()),
+                new Point(src.cols(), 0));
+
+        MatOfPoint2f point2 = new MatOfPoint2f(new Point(src.cols() * 0.3, src.cols() * 0.3),
+                new Point(src.cols() * 0.2, src.cols() * 0.6),
                 new Point(src.cols() * 0.7, src.cols() * 0.2));
         // 获取 放射变换 矩阵
         Mat dst = Imgproc.getAffineTransform(point1, point2);
@@ -71,29 +76,40 @@ public class ImageChange {
      */
     public static void warpPerspective() {
         Mat src = Imgcodecs.imread("C:\\Users\\xuyq\\Desktop\\1.png");
+
         MatOfPoint2f point1 = new MatOfPoint2f();
         List<Point> before = new ArrayList<>();
         before.add(new Point(0, 0));
         before.add(new Point(src.cols(), 0));
-        before.add(new Point(0, src.rows()));
         before.add(new Point(src.cols(), src.rows()));
+        before.add(new Point(0, src.rows()));
         point1.fromList(before);
+
         MatOfPoint2f point2 = new MatOfPoint2f();
         List<Point> after = new ArrayList<>();
-        after.add(new Point(20, 20));
-        after.add(new Point(src.cols() * 0.9, src.rows() * 0.1));
-        after.add(new Point(src.cols() * 0.1, src.rows() * 0.9));
-        after.add(new Point(src.cols() * 0.8, src.rows() * 0.8));
+        after.add(new Point(21, 20));
+        after.add(new Point(953, 74));
+        after.add(new Point(847, 574));
+        after.add(new Point(109, 643));
         point2.fromList(after);
+
         // 获取 透视变换 矩阵
-        Mat dst = Imgproc.getPerspectiveTransform(point1, point2);
+        Mat dst = Imgproc.getPerspectiveTransform(point2, point1,1);
+
+        for (int i = 0; i <dst.rows();i++){
+            for (int j = 0; j <dst.cols();j++) {
+                System.out.print(dst.get(i,j)[0]+"\t");
+            }
+            System.out.println();
+        }
+
         // 进行 透视变换
         Mat image = new Mat();
         Imgproc.warpPerspective(src, image, dst, src.size());
         HighGui.imshow("原图", src);
         HighGui.imshow("透视变换", image);
 
-        //Imgcodecs.imwrite("C:\\Users\\xuyq\\Desktop\\11.png", image);
+        //Imgcodecs.imwrite("C:\\Users\\xuyq\\Desktop\\1.png", image);
         HighGui.waitKey(0);
     }
 
@@ -107,7 +123,7 @@ public class ImageChange {
      * @date: 2022年2月22日12点32分
      */
     public static void rotate() {
-        Mat src = Imgcodecs.imread("C:\\Users\\Administrator\\Desktop\\1.png");
+        Mat src = Imgcodecs.imread("C:\\Users\\xuyq\\Desktop\\1.png");
         // 图像中心
         Point center = new Point(src.cols() / 2, src.rows() / 2);
         // 获取 旋转 矩阵
@@ -130,7 +146,7 @@ public class ImageChange {
      * @date: 2022年2月22日12点32分
      */
     public static void move() {
-        Mat src = Imgcodecs.imread("C:\\Users\\Administrator\\Desktop\\1.png");
+        Mat src = Imgcodecs.imread("C:\\Users\\xuyq\\Desktop\\1.png");
         // 自定义 旋转 矩阵
         Mat dst = new Mat(2, 3, CvType.CV_32F);
         dst.put(0, 0, 1);
@@ -157,9 +173,9 @@ public class ImageChange {
      * @date: 2022年2月22日12点32分
      */
     public static void resize() {
-        Mat src = Imgcodecs.imread("C:\\Users\\Administrator\\Desktop\\1.png");
+        Mat src = Imgcodecs.imread("C:\\Users\\xuyq\\Desktop\\1.png");
         // 图像中心
-        Point center = new Point(src.cols() / 2, src.rows() / 2);
+        Point center = new Point((double) src.cols() / 2, (double) src.rows() / 2);
         // 获取 旋转 矩阵
         Mat dst = Imgproc.getRotationMatrix2D(center, 0, 0.5);
         // 进行 图像缩放

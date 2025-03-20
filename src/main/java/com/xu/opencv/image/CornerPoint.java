@@ -41,7 +41,7 @@ public class CornerPoint {
     }
 
     public static void main(String[] args) {
-        harris();
+        shi_tomasi();
     }
 
     /**
@@ -54,7 +54,7 @@ public class CornerPoint {
      * @date: 2022年2月22日12点32分
      */
     public static void fast() {
-        Mat src = Imgcodecs.imread("D:\\OneDrive\\桌面\\5.jpeg");
+        Mat src = Imgcodecs.imread("C:\\Users\\xuyq\\Desktop\\11.png");
         HighGui.imshow("原图", src.clone());
         FastFeatureDetector fd = FastFeatureDetector.create(FastFeatureDetector.THRESHOLD);
         MatOfKeyPoint regions = new MatOfKeyPoint();
@@ -74,7 +74,7 @@ public class CornerPoint {
      * @date: 2022年2月22日12点32分
      */
     public static void orb() {
-        Mat src = Imgcodecs.imread("D:\\OneDrive\\桌面\\5.jpeg");
+        Mat src = Imgcodecs.imread("C:\\Users\\xuyq\\Desktop\\11.png");
         HighGui.imshow("原图", src.clone());
         Mat gray = new Mat();
         Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY);
@@ -96,7 +96,7 @@ public class CornerPoint {
      * @date: 2022年2月22日12点32分
      */
     public static void sift() {
-        Mat src = Imgcodecs.imread("D:\\OneDrive\\桌面\\5.jpeg");
+        Mat src = Imgcodecs.imread("C:\\Users\\xuyq\\Desktop\\11.png");
         HighGui.imshow("原图", src.clone());
         Mat gray = new Mat();
         Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY);
@@ -118,7 +118,7 @@ public class CornerPoint {
      * @date: 2019年8月26日 下午10:13:10
      */
     public static void harris() {
-        Mat src = Imgcodecs.imread("D:\\OneDrive\\桌面\\5.jpeg");
+        Mat src = Imgcodecs.imread("C:\\Users\\xuyq\\Desktop\\11.png");
         HighGui.imshow("原图", src.clone());
         Mat gray = new Mat();
         Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY);
@@ -146,12 +146,12 @@ public class CornerPoint {
      * @date: 2019年8月26日 下午10:11:02
      */
     public static void shi_tomasi() {
-        Mat src = Imgcodecs.imread("D:\\OneDrive\\桌面\\5.jpeg");
+        Mat src = Imgcodecs.imread("C:\\Users\\xuyq\\Desktop\\11.png");
         HighGui.imshow("原图", src.clone());
         Mat gray = new Mat();
         Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY);
         MatOfPoint corners = new MatOfPoint();
-        Imgproc.goodFeaturesToTrack(gray, corners, 200, 0.01, 10, new Mat(), 3, 5, false, 0.04);
+        Imgproc.goodFeaturesToTrack(gray, corners, 200, 0.1, 100, new Mat(), 5, 5, false, 0.04);
         int[] cornersData = new int[(int) (corners.total() * corners.channels())];
         corners.get(0, 0, cornersData);
         for (int i = 0; i < corners.rows(); i++) {
